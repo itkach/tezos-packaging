@@ -80,13 +80,14 @@ useradd --home-dir /var/lib/tezos tezos || true
 
 
 def mk_node_unit(suffix, env, desc):
-    service_file = ServiceFile(Unit(after=["network.target"], requires=[],
-                                    description=desc),
+    service_file = ServiceFile(Unit(after=["network.target", f"tezos-baking-{suffix}.service"],
+                                    requires=[], description=desc,
+                                    part_of=[f"tezos-baking-{suffix}.service"]),
                                Service(environment=env,
                                        exec_start="/usr/bin/tezos-node-start",
                                        state_directory="tezos", user="tezos"
                                ),
-                               Install(wanted_by=["multi-user.target"]))
+                               Install(wanted_by=["multi-user.target", f"tezos-baking-{suffix}.service"]))
     return SystemdUnit(suffix=suffix, service_file=service_file, startup_script="tezos-node-start")
 
 
