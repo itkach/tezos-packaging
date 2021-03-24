@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-MIT-TQ
 import os, shutil, sys, subprocess, json
 
-from .model import Service, ServiceFile, SystemdUnit, Unit, OpamBasedPackage, TezosSaplingParamsPackage, Install
+from .model import Service, ServiceFile, SystemdUnit, Unit, Install, OpamBasedPackage, TezosSaplingParamsPackage, TezosBakingServicesPackage
 
 networks = ["mainnet"]
 
@@ -290,3 +290,7 @@ for proto in active_protocols:
                                      postrm_steps=gen_daemon_specific_postrm(f"tezos-endorser-{proto}")))
 
 packages.append(TezosSaplingParamsPackage())
+packages.append(TezosBakingServicesPackage(
+    target_networks=["mainnet", "edo2net"],
+    target_protos=["008-PtEdo2Zk"]
+    ))
