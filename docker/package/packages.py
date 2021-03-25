@@ -129,8 +129,12 @@ cat > /usr/bin/tezos-node-{network} <<- 'EOM'
 TEZOS_NODE_DIR="$(cat $(systemctl show -p FragmentPath tezos-node-{network}.service | cut -d'=' -f2) | grep 'DATA_DIR' | cut -d '=' -f3 | cut -d '"' -f1)" tezos-node "$@"
 EOM
 chmod +x /usr/bin/tezos-node-{network}
+systemctl enable tezos-node-{network}.service > /dev/null || true
 '''
-    node_postrm_steps += f"rm -f /usr/bin/tezos-node-{network}\n"
+    node_postrm_steps += f'''
+rm -f /usr/bin/tezos-node-{network}
+systemctl disable tezos-node-{network}.service > /dev/null || true
+'''
 
 # Add custom config service
 node_units.append(mk_node_unit(suffix="custom", env=["DATA_DIR=/var/lib/tezos/node-custom",
@@ -154,8 +158,12 @@ cat > /usr/bin/tezos-node-edo2net <<- 'EOM'
 TEZOS_NODE_DIR="$(cat $(systemctl show -p FragmentPath tezos-node-edo2net.service | cut -d'=' -f2) | grep 'DATA_DIR' | cut -d '=' -f3 | cut -d '"' -f1)" tezos-node "$@"
 EOM
 chmod +x /usr/bin/tezos-node-edo2net
+systemctl enable tezos-node-edo2net.service > /dev/null || true
 '''
-node_postrm_steps += f"rm -f /usr/bin/tezos-node-edo2net\n"
+node_postrm_steps += f'''
+rm -f /usr/bin/tezos-node-edo2net
+systemctl disable tezos-node-edo2net.service > /dev/null || true
+'''
 
 packages.append(OpamBasedPackage("tezos-node",
                                  "Entry point for initializing, configuring and running a Tezos node",
